@@ -11,8 +11,10 @@ export interface AuthState {
   error: string | null
 }
 
+const savedToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+
 const initialState: AuthState = {
-  token: null,
+  token: savedToken,
   user: null,
   loading: false,
   error: null,
