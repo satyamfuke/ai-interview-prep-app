@@ -168,40 +168,79 @@ function InterviewGenerator() {
         <Box sx={{ display: 'grid', gap: 3, mb: 4 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
                 Technical questions
               </Typography>
-              {questions.map((question, index) => (
-                <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                  {index + 1}. {question}
-                </Typography>
-              ))}
+              <Box sx={{ display: 'grid', gap: 2 }}>
+                {questions.map((question, index) => (
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, pb: 2, borderBottom: index < questions.length - 1 ? '1px solid #e0e0e0' : 'none' }}>
+                    <Typography variant="body2">
+                      {index + 1}. {question}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      component={Link}
+                      to={`/dashboard/evaluate?question=${encodeURIComponent(question)}&technology=${technology}&type=${interviewType}`}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      Evaluate
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
                 HR questions
               </Typography>
-              {hrQuestions.map((question, index) => (
-                <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                  {index + 1}. {question}
-                </Typography>
-              ))}
+              <Box sx={{ display: 'grid', gap: 2 }}>
+                {hrQuestions.map((question, index) => (
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, pb: 2, borderBottom: index < hrQuestions.length - 1 ? '1px solid #e0e0e0' : 'none' }}>
+                    <Typography variant="body2">
+                      {index + 1}. {question}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      component={Link}
+                      to={`/dashboard/evaluate?question=${encodeURIComponent(question)}&technology=${technology}&type=${interviewType}`}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      Evaluate
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
                 Coding tasks
               </Typography>
-              {codingTasks.map((task, index) => (
-                <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                  {index + 1}. {task}
-                </Typography>
-              ))}
+              <Box sx={{ display: 'grid', gap: 2 }}>
+                {codingTasks.map((task, index) => (
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, pb: 2, borderBottom: index < codingTasks.length - 1 ? '1px solid #e0e0e0' : 'none' }}>
+                    <Typography variant="body2">
+                      {index + 1}. {task}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      component={Link}
+                      to={`/dashboard/evaluate?question=${encodeURIComponent(task)}&technology=${technology}&type=${interviewType}`}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      Evaluate
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
         </Box>

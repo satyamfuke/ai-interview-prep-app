@@ -1,7 +1,66 @@
 import express from 'express'
 import { verifyAccessToken } from '../utils/jwt'
+import { evaluateAnswer } from '../utils/aiEvaluation'
 
 const router = express.Router()
+
+// Local mock for OpenAI-like responses (used when MOCK_EVALUATION is enabled)
+router.post('/mock-openai', (req, res) => {
+  try {
+    const messages = req.body.messages || []
+    const userMessage = messages.find((m: any) => m.role === 'user')?.content || ''
+
+    // Try to extract question and answer from the user message
+    const match = userMessage.match(/Question:\s*"([\s\S]*?)"\s*\n\nCandidate Answer:\s*"([\s\S]*?)"/)
+    const question = match ? match[1] : ''
+    const answer = match ? match[2] : userMessage
+
+    const lower = (answer || '').toLowerCase()
+    const hasKeywords = ['virtual dom', 'diff', 'reconcile', 'reconciliation', 'vdom', 'render'].some((k) => lower.includes(k))
+
+    const correctnessScore = hasKeywords ? 82 : 60
+    const communicationScore = Math.max(55, Math.min(90, Math.floor((correctnessScore + 70) / 2)))
+
+    const evaluation = {
+      correctness: {
+        score: correctnessScore,
+        feedback: hasKeywords
+          ? 'The answer mentions key concepts (virtual DOM / reconciliation) but lacks some depth and examples.'
+          : 'The answer touches on the topic but misses core concepts; add details about how it works.',
+      },
+      communication: {
+        score: communicationScore,
+        feedback: 'The explanation is readable; consider structuring with an example and concise summary.',
+      },
+      improvements: [
+        'Add a short code example demonstrating the concept',
+        'Explain how reconciliation or diffing works in practice',
+        'Mention performance trade-offs and when this matters',
+      ],
+      overall_score: Math.round((correctnessScore + communicationScore) / 2),
+      summary: hasKeywords
+        ? 'Mock evaluation: Good high-level knowledge, add more technical depth and examples.'
+        : 'Mock evaluation: Basic understanding; expand on core internals and examples.',
+    }
+
+    // Return a Chat Completions-like shape so the client code can parse it
+    return res.json({
+      id: 'mock-m1',
+      object: 'chat.completion',
+      choices: [
+        {
+          message: {
+            role: 'assistant',
+            content: JSON.stringify(evaluation),
+          },
+        },
+      ],
+    })
+  } catch (err: any) {
+    console.error('mock-openai error', err)
+    return res.status(500).json({ message: 'mock-openai failed' })
+  }
+})
 
 function buildPrompt(technology: string, experience: string, interviewType: string) {
   return `Generate 10 ${technology} interview questions for a ${interviewType.toLowerCase()} developer with ${experience} experience.`
@@ -67,6 +126,26 @@ router.post('/generate-interview', (req, res) => {
     hrQuestions,
     codingTasks,
   })
+})
+
+router.post('/evaluate-answer', async (req, res) => {
+  const { question, answer, technology, interviewType } = req.body
+  
+  if (!question || !answer || !technology || !interviewType) {
+    return res.status(400).json({ 
+      message: 'question, answer, technology, and interviewType are required' 
+    })
+  }
+
+  try {
+    const evaluation = await evaluateAnswer(question, answer, technology, interviewType)
+    return res.json(evaluation)
+  } catch (error: any) {
+    console.error('Evaluation error:', error)
+    return res.status(500).json({ 
+      message: error.message || 'Failed to evaluate answer' 
+    })
+  }
 })
 
 export default router

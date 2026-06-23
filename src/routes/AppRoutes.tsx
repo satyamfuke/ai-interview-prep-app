@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard.tsx'
 import InterviewGenerator from '../pages/InterviewGenerator.tsx'
 import History from '../pages/History.tsx'
 import Profile from '../pages/Profile.tsx'
+import AnswerEvaluation from '../pages/AnswerEvaluation.tsx'
 import NotFound from '../pages/NotFound.tsx'
 import DashboardLayout from '../layouts/DashboardLayout.tsx'
 import { PrivateRoute } from '../components/PrivateRoute.tsx'
@@ -27,6 +28,7 @@ function AppRoutes() {
         >
           <Route index element={<Dashboard />} />
           <Route path="interview" element={<InterviewGenerator />} />
+          <Route path="evaluate" element={<AnswerEvaluation />} />
           <Route path="history" element={<History />} />
           <Route path="profile" element={<Profile />} />
         </Route>
